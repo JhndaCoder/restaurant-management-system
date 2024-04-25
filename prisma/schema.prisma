@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model Customer {
+  cust_id     Int     @id @default(autoincrement())
+  cust_fname  String
+  cust_lname  String
+  contact_no  String
+  Orders      Order[] @relation("Places")
+  Tips        Tip[]   @relation("Tips")
+}
+
+model Order {
+  ord_no   Int      @id @default(autoincrement())
+  ord_date DateTime @default(now())
+  cust_id  Int
+  customer Customer @relation("Places", fields: [cust_id], references: [cust_id])
+  waiter   Waiter   @relation("Takes", fields: [waiter_id], references: [waiter_id])
+  waiter_id Int
+  Contains Contains[]
+  Bill     Bill?    @relation("Generates")
+}
+
+model Waiter {
+  waiter_id    Int    @id @default(autoincrement())
+  waiter_fname String
+  waiter_lname String
+  Orders       Order[] @relation("Takes")
+  Tips         Tip[]  @relation("Tips")
+}
+
+model Tip {
+  cust_id   Int
+  customer  Customer @relation("Tips", fields: [cust_id], references: [cust_id])
+  waiter_id Int
+  waiter    Waiter   @relation("Tips", fields: [waiter_id], references: [waiter_id])
+  tip       Float
+
+  @@id([cust_id, waiter_id])
+}
+
+model Food {
+  item_no    Int    @id @default(autoincrement())
+  item_name  String
+  item_type  String
+  item_price Float
+  item_stock Int
+  chef_id    Int
+  chef       Chef   @relation(fields: [chef_id], references: [chef_id])
+  Contains   Contains[]
+}
+
+model Chef {
+  chef_id   Int    @id @default(autoincrement())
+  chef_fname String
+  chef_lname String
+  chef_type String
+  Foods     Food[]
+}
+
+model Bill {
+  bill_no     Int     @id @default(autoincrement())
+  tot_price   Float
+  tax         Float
+  discount    Float
+  net_payable Float
+  ord_no      Int     @unique
+  Order       Order   @relation("Generates", fields: [ord_no], references: [ord_no])
+}
+
+model Contains {
+  item_no   Int
+  food      Food  @relation(fields: [item_no], references: [item_no])
+  ord_no    Int
+  order     Order @relation(fields: [ord_no], references: [ord_no])
+
+  @@id([item_no, ord_no])
+}
