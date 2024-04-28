@@ -12,7 +12,7 @@ import { errorHandler } from './utils/error';
 const app = express()
 
 app.use(express.json());
-app.use('/customer', customerRoutes);
+app.use('/customers', customerRoutes);
 app.use('/orders', orderRoutes);
 app.use('/waiters', waitersRoutes);
 app.use('/tips', tipsRoutes);
