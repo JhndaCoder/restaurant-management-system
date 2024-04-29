@@ -8,9 +8,9 @@ import { router as chefRoutes } from './routes/chef';
 import { router as billRoutes } from './routes/bills';
 import { router as containsRoutes } from './routes/contains';
 import { errorHandler } from './utils/error';
-
+import cors from 'cors'
 const app = express()
-
+app.use(cors())
 app.use(express.json());
 app.use('/customers', customerRoutes);
 app.use('/orders', orderRoutes);
